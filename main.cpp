@@ -115,24 +115,68 @@ void display_results(const int &total_distance, const int &similarity_score, con
 
 void uncorrupt_memory(std::string &c_mem)
 {
-    std::regex mul_regex(R"(mul\((\d{1,3}),(\d{1,3})\))");
-    std::smatch match;
-    int total_sum{0};
+    int n = (int)c_mem.length();
+    int answer = 0;
 
-    auto begin = std::sregex_iterator(c_mem.begin(), c_mem.end(), mul_regex);
-    auto end = std::sregex_iterator();
+    c_mem += "#########################";
 
-    for (auto it = begin; it != end; ++it)
+    auto getNumber = [&](int &i)
     {
-        int x = std::stoi((*it)[1]); 
-        int y = std::stoi((*it)[2]);
-        
-        total_sum += x * y;
+        int x{0};
 
-        std::cout << "Found: mul(" << x << "," << y << ") => " << x * y << std::endl;
+        while (x < 1000 && isdigit(c_mem[i]))
+        {
+            x = 10 * x + (c_mem[i] - '0');
+            i++;
+        }
+
+        if (1 <= x && x <= 999)
+        {
+            return x;
+        }
+
+        return -1;
+    };
+
+    bool enabled = true;
+
+    for (int i = 0; i < n - 7; i++)
+    {
+        if (c_mem.substr(i, 4) == "do()")
+        {
+            enabled = true;
+        }
+        if (c_mem.substr(i, 7) == "don\'t()")
+        {
+            enabled = false;
+        }
+
+        if (enabled && c_mem[i] == 'm')
+        {
+            if (c_mem[i + 1] == 'u' && c_mem[i + 2] == 'l' && c_mem[i + 3] == '(')
+            {
+                i += 4;
+                int x = getNumber(i);
+
+                if (c_mem[i] == ',')
+                {
+                    i += 1;
+
+                    int y = getNumber(i);
+
+                    if (c_mem[i] == ')')
+                    {
+                        if (x != -1 && y != -1)
+                        {
+                            answer += x * y;
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    std::cout << "Total sum of valid mul instructions: " << total_sum << std::endl;
+    std::cout << "Total sum of mul operations: " << answer << '\n';
 }
 
 int main()
