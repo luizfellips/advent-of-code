@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <variant>
+#include <regex>
 #include <bits/stdc++.h>
 #include "File.hpp"
 
@@ -91,19 +92,55 @@ void calculate_report_status(int &safe_reports, int &unsafe_reports, const std::
         else if (is_safe_with_one_removal(row))
         {
             safe_reports++;
-        } else {
+        }
+        else
+        {
             unsafe_reports++;
         }
     }
 }
 
+void display_results(const int &total_distance, const int &similarity_score, const int &unsafe_reports, const int &safe_reports)
+{
+    std::cout << "\033[2J\033[1;1H";
+    std::cout << "------------------------------------------------------------" << "\n";
+    std::cout << "ADVENT OF CODE IMPLEMENTATIONS" << "\n";
+    std::cout << "------------------------------------------------------------" << "\n";
+    std::cout << "Total distance between both lists is equal to: " << total_distance << '\n';
+    std::cout << "Similarity score calculation equals to: " << similarity_score << '\n';
+    std::cout << "------------------------------------------------------------" << "\n";
+    std::cout << "Unsafe reports: " << unsafe_reports << '\n';
+    std::cout << "Safe reports: " << safe_reports << '\n';
+}
+
+void uncorrupt_memory(std::string &c_mem)
+{
+    std::regex mul_regex(R"(mul\((\d{1,3}),(\d{1,3})\))");
+    std::smatch match;
+    int total_sum{0};
+
+    auto begin = std::sregex_iterator(c_mem.begin(), c_mem.end(), mul_regex);
+    auto end = std::sregex_iterator();
+
+    for (auto it = begin; it != end; ++it)
+    {
+        int x = std::stoi((*it)[1]); 
+        int y = std::stoi((*it)[2]);
+        
+        total_sum += x * y;
+
+        std::cout << "Found: mul(" << x << "," << y << ") => " << x * y << std::endl;
+    }
+
+    std::cout << "Total sum of valid mul instructions: " << total_sum << std::endl;
+}
 
 int main()
 {
     std::vector<int> left_col;
     std::vector<int> right_col;
     std::vector<std::vector<int>> report_rows;
-
+    std::string c_mem;
     int col_size;
     int total_distance{0};
     int similarity_score{0};
@@ -112,9 +149,13 @@ int main()
 
     std::string columns_input = "files/input.csv";
     std::string reports_input = "files/reports.csv";
+    std::string c_mem_input = "files/corrupted.csv";
 
     populate_input_columns(left_col, right_col, columns_input);
     populate_reports(report_rows, reports_input);
+    copy_corrupted_memory(c_mem, c_mem_input);
+
+    uncorrupt_memory(c_mem);
 
     calculate_report_status(safe_reports, unsafe_reports, report_rows);
 
@@ -125,14 +166,8 @@ int main()
 
     calculate_total_distance(total_distance, left_col, right_col, col_size);
     calculate_similarity_score(similarity_score, left_col, right_col, col_size);
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "------------------------------------------------------------" << "\n";
-    std::cout << "ADVENT OF CODE IMPLEMENTATIONS" << "\n";
-    std::cout << "------------------------------------------------------------" << "\n";
-    std::cout << "Total distance between both lists is equal to: " << total_distance << '\n';
-    std::cout << "Similarity score calculation equals to: " << similarity_score << '\n';
-    std::cout << "------------------------------------------------------------" << "\n";
-    std::cout << "Unsafe reports: " << unsafe_reports << '\n';
-    std::cout << "Safe reports: " << safe_reports << '\n';
+
+    display_results(total_distance, similarity_score, unsafe_reports, safe_reports);
+
     return 0;
 }

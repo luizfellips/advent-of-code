@@ -1,6 +1,9 @@
 #include "File.hpp"
+#include <string>
+#include <iostream>
+#include <variant>
 
-std::variant<int, std::monostate> populate_input_columns(std::vector<int> &left_col, std::vector<int> &right_col, std::string &input)
+std::variant<int, std::monostate> populate_input_columns(std::vector<int> &left_col, std::vector<int> &right_col, const std::string &input)
 {
     std::ifstream fin(input);
     if (!fin.is_open())
@@ -27,7 +30,7 @@ std::variant<int, std::monostate> populate_input_columns(std::vector<int> &left_
     return 0;
 }
 
-std::variant<int, std::monostate> populate_reports(std::vector<std::vector<int>> &report_rows, std::string &input)
+std::variant<int, std::monostate> populate_reports(std::vector<std::vector<int>> &report_rows, const std::string &input)
 {
     std::ifstream fin(input);
 
@@ -56,4 +59,18 @@ std::variant<int, std::monostate> populate_reports(std::vector<std::vector<int>>
     fin.close();
 
     return std::monostate{};
+}
+
+std::variant<int, std::monostate> copy_corrupted_memory(std::string &c_mem, const std::string &input)
+{
+    std::ifstream fin(input);
+
+    std::string line;
+    std::stringstream buffer;
+    buffer << fin.rdbuf();
+    c_mem = buffer.str();
+
+    fin.close();
+
+    return std::variant<int, std::monostate>();
 }
