@@ -74,3 +74,29 @@ std::variant<int, std::monostate> copy_corrupted_memory(std::string &c_mem, cons
 
     return std::variant<int, std::monostate>();
 }
+
+std::variant<int, std::monostate> copy_xmas_input(std::vector<std::string> &xm_rows, const std::string &input)
+{
+    std::ifstream fin(input);
+    if (!fin.is_open())
+    {
+        std::cerr << "Error: Could not open the file.\n";
+        return 1;
+    }
+
+    std::string line;
+    while (std::getline(fin, line))
+    {
+        std::stringstream ss(line);
+        std::string row;
+
+        if (ss >> row)
+        {
+            xm_rows.push_back(row);
+        }
+    }
+
+    fin.close();
+
+    return std::variant<int, std::monostate>();
+}
