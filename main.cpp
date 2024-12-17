@@ -120,7 +120,7 @@ void grid_search(const std::vector<std::string> xm_rows)
     int word_length = word.length();
     int count = 0;
 
-    // Directions to check: (row change, column change) pairs.
+    // directions to check: (row change, column change) pairs.
     // each zero means the index is constant, i.e 0, 1 means x(row) is locked, while y(column) grows, going side to side.
     std::vector<std::pair<int, int>> directions = {
         {0, 1},   // Right (horizontal)
@@ -133,7 +133,7 @@ void grid_search(const std::vector<std::string> xm_rows)
         {-1, 1}   // Up-right (diagonal)
     };
 
-    // Function to check if "XMAS" exists starting from (row, col) in the given direction
+    // function to check if xmas exists starting from (row, col) in the given direction
     auto checkWord = [&](int row, int col, int dirRow, int dirCol) -> bool
     {
         for (int i = 0; i < word_length; ++i)
@@ -141,13 +141,13 @@ void grid_search(const std::vector<std::string> xm_rows)
             int r = row + dirRow * i;
             int c = col + dirCol * i;
 
-            // Check if the position is out of bounds
+            // check if the position is out of bounds
             if (r < 0 || r >= n || c < 0 || c >= n)
             {
                 return false;
             }
 
-            // Check if the character matches the corresponding character in "XMAS"
+            // check if the character matches the corresponding character in xmas as it iterates through
             if (xm_rows[r][c] != word[i])
             {
                 return false;
@@ -156,7 +156,6 @@ void grid_search(const std::vector<std::string> xm_rows)
         return true;
     };
 
-    // Iterate over each position in the grid
     for (int row = 0; row < n; ++row)
     {
         for (int col = 0; col < n; ++col)
